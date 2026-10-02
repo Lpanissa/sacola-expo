@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
+  <!-- Silhuetas de perfumaria (usadas como máscara; a cor vem do CSS) -->
+  <!-- frasco de perfume -->
+  <g transform="rotate(-10 44 60)">
+    <rect x="36" y="16" width="16" height="12" rx="3"/>
+    <rect x="41" y="28" width="6" height="8"/>
+    <rect x="20" y="36" width="48" height="50" rx="12"/>
+  </g>
+  <!-- batom -->
+  <g transform="rotate(18 150 50)">
+    <rect x="138" y="52" width="24" height="36" rx="4"/>
+    <rect x="141" y="36" width="18" height="16" rx="2"/>
+    <path d="M143 36 v-12 l14 -8 v20 z"/>
+  </g>
+  <!-- esmalte -->
+  <g transform="rotate(-8 214 110)">
+    <rect x="206" y="72" width="16" height="30" rx="4"/>
+    <rect x="196" y="102" width="36" height="34" rx="10"/>
+  </g>
+  <!-- sabonete -->
+  <g transform="rotate(-18 60 170)">
+    <rect x="30" y="150" width="60" height="36" rx="16"/>
+  </g>
+  <!-- bolhas -->
+  <circle cx="100" cy="138" r="7"/>
+  <circle cx="112" cy="122" r="4"/>
+  <!-- pente -->
+  <g transform="rotate(25 160 190)">
+    <rect x="124" y="178" width="72" height="12" rx="6"/>
+    <path d="M130 190 h4 v16 h-4 z M142 190 h4 v16 h-4 z M154 190 h4 v16 h-4 z M166 190 h4 v16 h-4 z M178 190 h4 v16 h-4 z M190 190 h4 v12 h-4 z"/>
+  </g>
+  <!-- brilhinho -->
+  <path d="M110 220 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 l10 -4 z"/>
+  <path d="M226 190 l3 7 l7 3 l-7 3 l-3 7 l-3 -7 l-7 -3 l7 -3 z"/>
+</svg>

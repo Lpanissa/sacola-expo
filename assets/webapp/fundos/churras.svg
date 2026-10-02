@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
+  <!-- Silhuetas de churrasco (usadas como máscara; a cor vem do CSS) -->
+  <!-- espeto com carne -->
+  <g transform="rotate(-35 50 50)">
+    <rect x="46" y="4" width="4" height="96" rx="2"/>
+    <rect x="36" y="16" width="24" height="16" rx="5"/>
+    <rect x="38" y="36" width="20" height="12" rx="5"/>
+    <rect x="36" y="52" width="24" height="16" rx="5"/>
+  </g>
+  <!-- garrafa -->
+  <g transform="rotate(12 170 50)">
+    <rect x="164" y="10" width="12" height="8" rx="2"/>
+    <path d="M165 18 h10 v12 q10 8 10 20 v36 a5 5 0 0 1 -5 5 h-20 a5 5 0 0 1 -5 -5 v-36 q0 -12 10 -20 Z"/>
+  </g>
+  <!-- linguiça -->
+  <g transform="rotate(20 60 160)">
+    <rect x="24" y="150" width="72" height="20" rx="10"/>
+  </g>
+  <!-- lata -->
+  <g transform="rotate(-10 140 150)">
+    <rect x="126" y="126" width="28" height="44" rx="6"/>
+  </g>
+  <!-- churrasqueira -->
+  <g transform="rotate(6 200 190)">
+    <path d="M176 176 h52 a26 26 0 0 1 -52 0 Z"/>
+    <rect x="190" y="200" width="4" height="26" rx="2"/>
+    <rect x="210" y="200" width="4" height="26" rx="2"/>
+  </g>
+  <!-- fogo -->
+  <path d="M96 236 q-18 -14 -6 -34 q2 10 10 12 q-4 -16 10 -26 q-2 14 8 22 q10 12 -2 26 z"/>
+</svg>

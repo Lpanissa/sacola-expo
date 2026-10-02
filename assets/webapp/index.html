@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#E4F4EC" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14221D" media="(prefers-color-scheme: dark)">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <title>Sacola</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Cabeçalho com perfil -->
+  <header class="topbar">
+    <button id="btn-perfil" class="perfil-avatar" aria-label="Perfil">
+      <span id="perfil-inicial">?</span>
+    </button>
+    <h1 class="topbar-titulo">
+      <img class="topbar-logo" src="icons/logo.svg" alt="" aria-hidden="true">
+      Sacola
+    </h1>
+    <button id="topbar-grupo" class="topbar-grupo oculto" title="Meus grupos"></button>
+  </header>
+
+  <!-- Faixa que aparece quando o grupo em uso já terminou (ver grupos.js) -->
+  <div id="aviso-consulta" class="aviso-consulta oculto" role="status"></div>
+
+  <!-- Conteúdo principal: uma página por vez -->
+  <main id="app-conteudo">
+
+    <!-- PÁGINA: MERCADO -->
+    <section id="pagina-mercado" class="pagina ativa">
+      <div id="mercado-vazio" class="estado-vazio">
+        <img class="estado-vazio-ilustracao" src="icons/logo.svg" alt="" aria-hidden="true">
+        <p class="estado-vazio-titulo">Nenhuma compra em andamento</p>
+        <p class="estado-vazio-texto">Bora pro mercado? Comece uma nova compra 🛒</p>
+        <button id="btn-nova-compra" class="botao-primario">Nova compra</button>
+      </div>
+
+      <div id="mercado-conteudo" class="oculto">
+        <div class="toldo-feira" aria-hidden="true"></div>
+        <div class="compra-cabecalho">
+          <span id="compra-tipo" class="compra-tipo"></span>
+          <input type="date" id="input-data-compra" class="input-data-compra" aria-label="Data da compra">
+        </div>
+
+        <div class="resumo-compra">
+          <div class="resumo-item">
+            <span class="resumo-label">Total</span>
+            <span id="resumo-total" class="resumo-valor">R$ 0,00</span>
+          </div>
+          <div class="resumo-item">
+            <span class="resumo-label">Itens</span>
+            <span id="resumo-qtd" class="resumo-valor">0</span>
+          </div>
+          <button type="button" id="btn-editar-orcamento" class="resumo-item resumo-item-botao">
+            <span class="resumo-label">Disponível</span>
+            <span id="resumo-limite" class="resumo-valor">- -</span>
+          </button>
+        </div>
+
+        <form id="form-item" class="form-item" autocomplete="off">
+          <div class="campo-com-limpar">
+            <input type="text" id="input-item-desc" placeholder="Ex: 3 sucos" required>
+            <button type="button" id="btn-limpar-item-desc" class="botao-limpar-campo oculto" aria-label="Limpar">✕</button>
+          </div>
+          <input type="text" inputmode="numeric" data-dinheiro id="input-item-preco" placeholder="Preço" aria-label="Preço (opcional)">
+          <button type="submit" class="botao-adicionar" aria-label="Adicionar item">+</button>
+        </form>
+
+        <!-- Só aparece quando há sugestões da Lista de compras para o tipo
+             desta compra (ver mercado.js). A pessoa pode ocultar clicando
+             na seta; a escolha fica salva no aparelho. Com as sugestões
+             ocultas, se o que a pessoa digitar bater com alguma, aparece
+             um balãozinho pequeno aqui do lado, sem precisar abrir tudo. -->
+        <button type="button" id="btn-alternar-sugestoes" class="sugestoes-cabecalho oculto" aria-expanded="true">
+          <span class="sugestoes-titulo">
+            <span>Sugestões da lista</span>
+            <span id="sugestao-correspondencia-mini" class="sugestao-correspondencia-mini oculto" role="button" tabindex="0"></span>
+          </span>
+          <svg class="sugestoes-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="lista-sugestoes" class="lista-sugestoes"></div>
+
+        <ul id="lista-itens" class="lista-itens"></ul>
+
+        <!-- Os itens já são salvos automaticamente; isto só encerra a compra
+             (ela vai para o Histórico). Compras de dias anteriores são
+             encerradas sozinhas ao abrir o app. -->
+        <div class="compra-acoes-rodape">
+          <button id="btn-finalizar-compra" class="botao-discreto">Encerrar compra</button>
+          <!-- Sai desta compra sem encerrar: ela continua aberta, e volta a
+               aparecer em "Outras compras abertas" pra retomar depois. -->
+          <button id="btn-sair-compra" class="botao-discreto">Sair</button>
+        </div>
+      </div>
+      <!-- Outras compras abertas no grupo (de outras pessoas ou minhas) -->
+      <div id="outras-compras" class="outras-compras oculto"></div>
+    </section>
+
+    <!-- PÁGINA: LISTA DE COMPRAS -->
+    <section id="pagina-lista" class="pagina">
+      <!-- Abas com as listas criadas (uma por tipo de compra) + "Nova lista" -->
+      <div id="listas-abas" class="listas-abas"></div>
+
+      <div id="listas-vazio" class="estado-vazio oculto">
+        <p class="estado-vazio-emoji" aria-hidden="true">📝</p>
+        <p id="listas-vazio-titulo" class="estado-vazio-titulo">Nenhuma lista ainda</p>
+        <p id="listas-vazio-texto" class="estado-vazio-texto">Crie uma lista para o mercado, a farmácia, a feira…</p>
+        <button id="btn-criar-lista" class="botao-primario">Criar lista</button>
+      </div>
+
+      <!-- Grupo em uso sem lista e a pessoa não é administradora: só espera -->
+      <p id="lista-aguardando" class="lista-aguardando oculto"></p>
+
+      <div id="lista-selecionada" class="oculto">
+        <p id="lista-dono" class="lista-dono oculto"></p>
+        <form id="form-lista-item" class="form-item" autocomplete="off">
+          <input type="text" id="input-lista-desc" placeholder="O que precisa comprar?" required>
+          <button type="submit" class="botao-adicionar" aria-label="Adicionar à lista">+</button>
+        </form>
+        <!-- Enquanto a pessoa digita, mostra os itens já existentes que batem
+             com o texto (ver lista.js), pra não duplicar sem perceber -->
+        <div id="lista-correspondencias" class="lista-correspondencias oculto"></div>
+        <ul id="lista-compras-itens" class="lista-itens"></ul>
+        <button id="btn-apagar-lista" class="botao-discreto">Apagar esta lista</button>
+      </div>
+    </section>
+
+    <!-- PÁGINA: HISTÓRICO -->
+    <section id="pagina-historico" class="pagina">
+      <input type="text" id="input-busca-historico" class="input-busca" placeholder="Buscar item comprado...">
+      <div id="historico-destaques" class="historico-destaques"></div>
+      <ul id="lista-historico" class="lista-historico"></ul>
+    </section>
+
+  </main>
+
+  <!-- Menu inferior -->
+  <nav class="tabbar">
+    <button class="tab-item ativa" data-pagina="mercado">
+      <svg class="tab-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 4h2.5l2.2 10.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.5L21 8H6.3"/>
+        <circle cx="10" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/>
+      </svg>
+      <span class="tab-label">Carrinho</span>
+    </button>
+    <button class="tab-item" data-pagina="lista">
+      <svg class="tab-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="4" y="3" width="16" height="18" rx="4"/>
+        <path d="M8.5 9l1.5 1.5L13 7.5M8.5 15.5h7"/>
+      </svg>
+      <span class="tab-label">Lista</span>
+    </button>
+    <button class="tab-item" data-pagina="historico">
+      <svg class="tab-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M12 7v5l3 2"/>
+      </svg>
+      <span class="tab-label">Histórico</span>
+    </button>
+  </nav>
+
+  <!-- ===== Modais ===== -->
+
+  <div id="modal-nova-compra" class="modal oculto">
+    <div class="modal-conteudo">
+      <h2>Nova compra</h2>
+      <p>Que tipo de compra é essa?</p>
+      <div id="opcoes-tipo-compra" class="opcoes-tipo"></div>
+    </div>
+  </div>
+
+  <div id="modal-nova-lista" class="modal oculto">
+    <div class="modal-conteudo">
+      <h2>Nova lista</h2>
+      <p>Lista de quê?</p>
+      <div id="opcoes-tipo-lista" class="opcoes-tipo"></div>
+    </div>
+  </div>
+
+  <div id="modal-orcamento" class="modal oculto">
+    <div class="modal-conteudo">
+      <h2>Detalhes da compra</h2>
+      <label for="input-data-nova-compra" class="campo-label">Data da compra</label>
+      <input type="date" id="input-data-nova-compra">
+      <label for="input-orcamento" class="campo-label">Orçamento (opcional)</label>
+      <input type="text" inputmode="numeric" data-dinheiro id="input-orcamento" placeholder="Ex: 150,00">
+      <div class="modal-botoes">
+        <button id="btn-pular-orcamento" class="botao-secundario">Pular</button>
+        <button id="btn-confirmar-orcamento" class="botao-primario">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Editar o orçamento de uma compra já aberta (ver mercado.js) -->
+  <div id="modal-editar-orcamento" class="modal oculto">
+    <div class="modal-conteudo">
+      <h2>Orçamento da compra</h2>
+      <label for="input-editar-orcamento" class="campo-label">Orçamento (opcional)</label>
+      <input type="text" inputmode="numeric" data-dinheiro id="input-editar-orcamento" placeholder="Ex: 150,00">
+      <div class="modal-botoes">
+        <button id="btn-remover-orcamento" class="botao-secundario">Sem orçamento</button>
+        <button id="btn-salvar-orcamento" class="botao-primario">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Perfil -->
+  <div id="modal-perfil" class="modal oculto">
+    <div class="modal-conteudo">
+      <h2>Perfil</h2>
+
+      <div id="perfil-area-deslogado">
+        <p>Você está usando sem conta. Suas compras ficam salvas neste aparelho.</p>
+        <p>Entre com Google para compartilhar com seu parceiro(a) e acessar de outros aparelhos.</p>
+        <button id="btn-login-google" class="botao-primario">Entrar com Google</button>
+        <a href="privacidade.html" target="_blank" rel="noopener" class="link-termos">Termos de Uso e Privacidade</a>
+      </div>
+
+      <div id="perfil-area-logado" class="oculto">
+        <div class="perfil-cabecalho">
+          <div class="perfil-foto-area">
+            <span id="perfil-foto" class="perfil-foto"></span>
+            <!-- Lápis discreto: abre as opções logo abaixo dele -->
+            <button id="btn-editar-foto" class="btn-editar-foto" aria-label="Trocar foto" aria-haspopup="menu"><svg class="icone-lapis" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.21a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+            <div id="menu-foto" class="menu-foto oculto" role="menu">
+              <button type="button" role="menuitem" data-origem="camera"><svg class="icone-menu" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 3 7.2 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg> Câmera</button>
+              <button type="button" role="menuitem" data-origem="galeria"><svg class="icone-menu" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm3.5 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM5 19h14l-4.5-6-3.5 4.5-2.5-3L5 19z"/></svg> Galeria</button>
+              <button type="button" role="menuitem" data-origem="google" id="opcao-foto-google"><svg class="icone-menu" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.5 8c-2.65 0-5.05 1-6.9 2.6L2 7v9h9l-3.62-3.62A7.95 7.95 0 0 1 12.5 10.5c3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg> Foto do Google</button>
+            </div>
+            <input type="file" id="input-foto-camera" accept="image/*" capture="user" hidden>
+            <input type="file" id="input-foto-galeria" accept="image/*" hidden>
+          </div>
+          <span id="perfil-nome-exibicao" class="perfil-nome-exibicao"></span>
+        </div>
+      </div>
+
+      <div class="perfil-lista-acoes">
+        <button id="btn-meus-grupos" class="botao-secundario"><svg class="icone-menu" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm7 0a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM9 13c-3.3 0-7 1.6-7 4.5V20h14v-2.5C16 14.6 12.3 13 9 13zm7.3.1c1.9.6 3.7 1.9 3.7 4.4V20h4v-2.5c0-2.6-3.6-4.1-7.7-4.4z"/></svg> Meus grupos</button>
+        <button id="btn-abrir-configuracoes" class="botao-secundario">Configurações</button>
+        <button id="btn-logout" class="botao-perigo oculto">Sair da conta</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal "Meus grupos" (ver grupos.js) -->
+  <div id="modal-grupos" class="modal oculto">
+    <div class="modal-conteudo">
+      <h2>Meus grupos</h2>
+      <ul id="grupos-lista" class="grupos-lista"></ul>
+
+      <!-- As opções só aparecem depois de tocar em "Novo grupo" -->
+      <button id="btn-novo-grupo" class="botao-primario">+ Novo grupo</button>
+      <div id="grupos-opcoes-novo" class="opcoes-tipo grupos-opcoes-novo oculto">
+        <button id="btn-criar-grupo" class="opcao-tipo-botao">
+          <span class="opcao-tipo-emoji opcao-icone"><svg class="icone-opcao" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 4h2v7h7v2h-7v7h-2v-7H4v-2h7z"/></svg></span>Criar um grupo
+        </button>
+        <button id="btn-entrar-grupo" class="opcao-tipo-botao">
+          <span class="opcao-tipo-emoji opcao-icone"><svg class="icone-opcao" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 14a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm5.65-4A6 6 0 1 0 12.65 14H15v3h3v-3h3v-4h-8.35z"/></svg></span>Entrar com código
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Participantes de um grupo: papéis e permissões (ver grupos.js) -->
+  <div id="modal-participantes" class="modal oculto">
+    <div class="modal-conteudo">
+      <h2 id="participantes-titulo">Participantes</h2>
+      <p id="participantes-subtitulo" class="participantes-subtitulo"></p>
+      <ul id="participantes-lista" class="participantes-lista"></ul>
+    </div>
+  </div>
+
+  <!-- Modal para dar nome a um grupo novo -->
+  <div id="modal-novo-grupo" class="modal oculto">
+    <div class="modal-conteudo">
+      <h2>Novo grupo</h2>
+      <p>Dê um nome para o grupo (ex: Casa, Amigos da praia, Trabalho).</p>
+      <input type="text" id="input-nome-grupo" placeholder="Nome do grupo" maxlength="30">
+      <label for="input-termino-grupo" class="campo-label">Termina em (opcional)</label>
+      <input type="date" id="input-termino-grupo">
+      <p class="campo-ajuda">Depois dessa data o grupo fica só para consulta: ninguém entra e ninguém adiciona nada, mas dá para rever as compras e quem participou.</p>
+      <div class="modal-botoes">
+        <button id="btn-confirmar-novo-grupo" class="botao-primario">Criar grupo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal que aparece para quem abriu um link de convite (ver grupos.js) -->
+  <div id="modal-aceitar-convite" class="modal oculto">
+    <div class="modal-conteudo convite-recebido">
+      <div class="dialogo-emoji" aria-hidden="true">💌</div>
+      <h2 id="convite-titulo">Você foi convidado(a)!</h2>
+      <div id="convite-avatares" class="grupo-avatares convite-avatares"></div>
+      <p id="convite-texto" class="convite-texto"></p>
+      <button id="btn-aceitar-convite" class="botao-primario">Aceitar convite</button>
+    </div>
+  </div>
+
+  <!-- Modal de Convite / Entrar em grupo -->
+  <div id="modal-convite" class="modal oculto">
+    <div class="modal-conteudo">
+      <h2>Grupo compartilhado</h2>
+
+      <div id="convite-area-codigo">
+        <p>Mostre o QR code ou mande o link para quem você quer no grupo. Quem entrar vê as mesmas compras e listas.</p>
+        <div id="qr-convite" class="qr-convite"></div>
+        <button id="btn-compartilhar-convite" class="botao-primario"><svg class="icone-menu" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.1c-.8 0-1.5.3-2 .8l-7.1-4.2c.1-.2.1-.5.1-.7s0-.5-.1-.7L16 7.2c.5.5 1.2.8 2 .8a3 3 0 1 0-3-3c0 .2 0 .5.1.7L8 9.8A3 3 0 1 0 8 14.2l7.1 4.2-.1.6a3 3 0 1 0 3-2.9z"/></svg> Enviar link de convite</button>
+        <p class="convite-ou">ou passe o código:</p>
+        <div id="codigo-convite-gerado" class="codigo-convite-caixa"></div>
+      </div>
+
+      <div id="convite-area-entrar">
+        <p>Digite o código que te passaram ou leia o QR code:</p>
+        <input type="text" id="input-codigo-entrar" placeholder="Código de convite" maxlength="6" autocapitalize="characters">
+        <div class="modal-botoes">
+          <button id="btn-ler-qr" class="botao-secundario"><svg class="icone-menu" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 3 7.2 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg> Ler QR code</button>
+          <button id="btn-confirmar-entrar-grupo" class="botao-primario">Entrar no grupo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leitor de QR code do convite (ver qrcode-convite.js) -->
+  <div id="modal-leitor-qr" class="modal modal-leitor oculto">
+    <div class="modal-conteudo">
+      <h2>Ler QR code</h2>
+      <div class="leitor-qr-moldura">
+        <video id="leitor-qr-video" playsinline muted></video>
+        <span class="leitor-qr-mira" aria-hidden="true"></span>
+      </div>
+      <p id="leitor-qr-mensagem" class="leitor-qr-mensagem"></p>
+    </div>
+  </div>
+
+  <!-- Modal de detalhes de uma compra do Histórico (ver historico-detalhe.js) -->
+  <div id="modal-compra-detalhe" class="modal oculto">
+    <div class="modal-conteudo">
+      <div class="compra-cabecalho">
+        <h2 id="detalhe-tipo" class="detalhe-tipo"></h2>
+      </div>
+      <input type="date" id="detalhe-data" class="input-data-compra detalhe-data" aria-label="Data da compra">
+
+      <div class="resumo-compra">
+        <div class="resumo-item">
+          <span class="resumo-label">Total</span>
+          <span id="detalhe-total" class="resumo-valor">R$ 0,00</span>
+        </div>
+        <div class="resumo-item">
+          <span class="resumo-label">Itens</span>
+          <span id="detalhe-qtd" class="resumo-valor">0</span>
+        </div>
+        <div class="resumo-item">
+          <span class="resumo-label">Orçamento</span>
+          <span id="detalhe-limite" class="resumo-valor">- -</span>
+        </div>
+      </div>
+      <div id="detalhe-ultrapassou" class="historico-ultrapassou oculto"></div>
+
+      <ul id="detalhe-itens" class="lista-itens"></ul>
+
+      <p class="campo-label">Esqueceu algum item?</p>
+      <form id="form-detalhe-item" class="form-item" autocomplete="off">
+        <input type="text" id="input-detalhe-desc" placeholder="Ex: 3 sucos" required>
+        <input type="text" inputmode="numeric" data-dinheiro id="input-detalhe-preco" placeholder="Preço" aria-label="Preço (opcional)">
+        <button type="submit" class="botao-adicionar" aria-label="Adicionar item">+</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de Configurações -->
+  <div id="modal-configuracoes" class="modal oculto">
+    <div class="modal-conteudo">
+      <h2>Configurações</h2>
+
+      <div class="config-linha">
+        <span class="config-label">Avisar a partir de quantos % do limite:</span>
+        <input type="number" id="input-percentual-alerta" min="1" max="100" value="85">
+      </div>
+
+      <div class="config-linha config-chave">
+        <label for="chave-avisos" class="config-chave-texto">
+          <span class="config-label"><svg class="icone-menu" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5.5-6.84V3.5a1.5 1.5 0 0 0-3 0v.66A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2z"/></svg> Avisos do grupo</span>
+          <small>Um balãozinho discreto quando alguém do grupo adiciona um item, cria uma lista ou compra algo.</small>
+        </label>
+        <input type="checkbox" id="chave-avisos" class="chave" role="switch">
+      </div>
+
+      <div class="config-linha">
+        <span class="config-label">Tema</span>
+        <div class="opcoes-tema">
+          <button class="botao-tema-opcao" data-tema="claro">Claro</button>
+          <button class="botao-tema-opcao" data-tema="escuro">Escuro</button>
+          <button class="botao-tema-opcao" data-tema="automatico">Automático</button>
+        </div>
+      </div>
+
+      <!-- Ajuda com Pix: desativada por enquanto (política de pagamentos da
+           Play). Bloco mantido comentado, não apagado, para reativar depois.
+      <div id="config-ajuda" class="config-ajuda oculto">
+        <span class="config-label">Ajude o Sacola</span>
+        <p class="config-ajuda-texto">O Sacola é feito com carinho e é de graça. Qualquer valor é muito importante e ajuda a manter e melhorar o app com novidades. Obrigado por fazer parte!</p>
+        <button type="button" id="btn-copiar-pix" class="botao-primario">Copiar chave Pix</button>
+        <p id="ajuda-obrigado" class="config-ajuda-obrigado oculto" role="status">Chave Pix copiada! Muito obrigado pelo carinho</p>
+      </div>
+      -->
+    </div>
+  </div>
+
+  <!-- Desenha o QR code do convite (qrcode-convite.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="principal.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+  </script>
+</body>
+</html>

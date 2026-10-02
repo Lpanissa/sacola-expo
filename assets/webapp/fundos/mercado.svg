@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
+  <!-- Silhuetas de mercado (usadas como máscara; a cor vem do CSS) -->
+  <!-- caixa de leite -->
+  <g transform="rotate(-10 34 52)">
+    <rect x="28" y="16" width="12" height="7" rx="2"/>
+    <path d="M18 42 L26 26 H42 L50 42 V86 a4 4 0 0 1 -4 4 H22 a4 4 0 0 1 -4 -4 Z"/>
+  </g>
+  <!-- carrinho -->
+  <g transform="rotate(8 150 50)" fill="none" stroke="#000" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M112 26 h12 l10 38 h40 l10 -28 H128"/>
+    <circle cx="140" cy="80" r="4" fill="#000"/>
+    <circle cx="170" cy="80" r="4" fill="#000"/>
+  </g>
+  <!-- pacote / caixa -->
+  <g transform="rotate(12 200 150)">
+    <rect x="178" y="126" width="46" height="12" rx="3"/>
+    <rect x="182" y="142" width="38" height="34" rx="4"/>
+  </g>
+  <!-- garrafa -->
+  <g transform="rotate(-14 90 160)">
+    <rect x="84" y="118" width="12" height="8" rx="2"/>
+    <path d="M85 128 h10 v10 q12 8 12 22 v38 a5 5 0 0 1 -5 5 h-24 a5 5 0 0 1 -5 -5 v-38 q0 -14 12 -22 Z"/>
+  </g>
+  <!-- pão -->
+  <g transform="rotate(-25 36 170)">
+    <ellipse cx="36" cy="170" rx="30" ry="13"/>
+  </g>
+  <!-- lata -->
+  <g transform="rotate(10 160 214)">
+    <rect x="146" y="196" width="28" height="36" rx="5"/>
+  </g>
+  <!-- maçã -->
+  <g transform="rotate(6 218 50)">
+    <circle cx="211" cy="58" r="13"/>
+    <circle cx="225" cy="58" r="13"/>
+    <path d="M218 44 q2 -10 10 -12 q-2 10 -10 12 Z"/>
+  </g>
+</svg>
