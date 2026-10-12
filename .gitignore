@@ -39,3 +39,8 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# chaves do Firebase (geradas por app, não são segredo mas não precisam
+# ficar públicas; cada dev gera a sua própria a partir do Firebase Console)
+google-services.json
+GoogleService-Info.plist
